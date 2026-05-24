@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Del'art Compras">
+<meta name="theme-color" content="#3B2314">
+<title>Del'art — Compras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FAF7F2;--brown:#3B2314;--brown-mid:#6B3D26;--brown-light:#C4956A;--gold:#C9A84C;--gold-light:#F0D98A;--green:#2D6A4F;--green-light:#D8F3DC;--red:#C1121F;--red-light:#FFE5E7;--orange-light:#FFF3E0;--orange:#E07B2A;--border:#E8DDD0;--text:#2C1810;--text-mid:#7A5C4A;--text-light:#B09080;--white:#FFFFFF;--shadow:0 2px 12px rgba(59,35,20,0.08);--shadow-lg:0 8px 32px rgba(59,35,20,0.14);--radius:14px;--radius-sm:8px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);font-size:15px}
+body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height:100dvh}
+
+/* LOGIN */
+#login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:32px 28px;background:var(--brown)}
+.login-logo{font-family:'DM Serif Display',serif;font-size:42px;color:var(--cream);margin-bottom:4px}
+.login-logo span{color:var(--gold-light);font-style:italic}
+.login-sub{font-size:12px;color:var(--brown-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:48px}
+.login-card{background:var(--cream);border-radius:var(--radius);padding:28px 24px;width:100%;max-width:340px}
+.login-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--brown);margin-bottom:20px}
+.login-err{background:var(--red-light);color:var(--red);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;margin-bottom:16px;display:none}
+
+/* HEADER */
+.app-header{background:var(--brown);color:var(--cream);padding:14px 20px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
+.app-logo{font-family:'DM Serif Display',serif;font-size:20px}
+.app-logo span{color:var(--gold-light);font-style:italic}
+.header-sub{font-size:10px;color:var(--brown-light);letter-spacing:.08em;text-transform:uppercase}
+.header-user{font-size:12px;color:var(--brown-light);cursor:pointer;display:flex;align-items:center;gap:6px}
+
+/* NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 7px;cursor:pointer;border:none;background:transparent;color:var(--text-light);font-size:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:.03em;transition:color .2s}
+.nav-item.active{color:var(--brown)}
+.nav-item svg{width:20px;height:20px}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);display:none;margin-top:1px}
+.nav-item.active .nav-dot{display:block}
+
+/* SCREENS */
+.screen{display:none;padding:20px 20px 100px;flex:1;overflow-y:auto}
+.screen.active{display:block}
+.screen-title{font-family:'DM Serif Display',serif;font-size:24px;color:var(--brown);margin-bottom:2px}
+.screen-sub{font-size:13px;color:var(--text-mid);margin-bottom:18px}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+.metric-card{background:var(--white);border-radius:var(--radius);padding:13px 15px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.metric-card.alert{background:var(--brown)}
+.metric-label{font-size:10px;color:var(--text-light);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.metric-card.alert .metric-label{color:var(--brown-light)}
+.metric-value{font-family:'DM Serif Display',serif;font-size:26px;color:var(--brown)}
+.metric-card.alert .metric-value{color:var(--gold-light)}
+
+/* CARDS */
+.card{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden}
+.card-header{padding:13px 15px 9px}
+.card-body{padding:0 15px 13px}
+.card-title{font-weight:600;font-size:14px;color:var(--text);margin-bottom:1px}
+.card-sub{font-size:12px;color:var(--text-mid)}
+.card-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:500;white-space:nowrap}
+.badge-ok{background:var(--green-light);color:var(--green)}
+.badge-warn{background:var(--orange-light);color:var(--orange)}
+.badge-danger{background:var(--red-light);color:var(--red)}
+.badge-info{background:#E3EFFD;color:#1A5FB4}
+.badge-gray{background:#F0EBE5;color:var(--text-mid)}
+.badge-mp{background:#E1F5EE;color:#0F6E56}
+.badge-pkg{background:#EEEDFE;color:#3C3489}
+
+/* PROGRESS */
+.prog-wrap{background:#F0EBE5;border-radius:99px;height:5px}
+.prog-bar{height:5px;border-radius:99px;background:var(--brown-light);transition:width .4s}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text-light);margin-bottom:3px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+.btn-primary{background:var(--brown);color:var(--cream);width:100%}
+.btn-primary:active{background:var(--brown-mid)}
+.btn-secondary{background:transparent;color:var(--text-mid);border:1px solid var(--border)}
+.btn-ghost{background:transparent;color:var(--text-mid);font-size:12px;padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-fab{position:fixed;bottom:76px;right:20px;width:50px;height:50px;border-radius:50%;background:var(--brown);color:var(--cream);border:none;cursor:pointer;box-shadow:var(--shadow-lg);font-size:24px;display:flex;align-items:center;justify-content:center;z-index:90}
+.btn-row{display:flex;gap:8px;margin-top:14px}
+.btn-row .btn{flex:1}
+
+/* SEARCH */
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;margin-bottom:14px}
+.search-bar input{border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);flex:1;outline:none}
+
+/* PILLS */
+.pills{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{padding:5px 13px;border:1px solid var(--border);border-radius:99px;font-size:12px;font-weight:500;color:var(--text-mid);background:var(--white);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.pill.active{background:var(--brown);color:var(--cream);border-color:var(--brown)}
+
+/* FORM */
+.form-section{margin-bottom:22px}
+.form-section-title{font-size:11px;font-weight:600;color:var(--text-mid);text-transform:uppercase;letter-spacing:.08em;margin-bottom:11px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.form-field{margin-bottom:13px}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--text-mid);margin-bottom:5px}
+.form-input{width:100%;padding:10px 13px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--white);outline:none;transition:border-color .15s;appearance:auto}
+.form-input:focus{border-color:var(--brown-light)}
+.form-hint{font-size:11px;color:var(--text-light);margin-top:3px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+textarea.form-input{height:68px;resize:none}
+
+/* BANCO */
+.banco-box{background:#FDF9F4;border:1px solid #E8D8C8;border-radius:var(--radius);padding:13px;margin-bottom:11px}
+.banco-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #EFE5D8;font-size:13px}
+.banco-row:last-child{border-bottom:none}
+.banco-key{color:var(--text-mid);flex-shrink:0;margin-right:8px}
+.banco-val{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--brown);text-align:right}
+.copy-btn{padding:3px 10px;font-size:11px;border:1px solid var(--border);border-radius:99px;background:var(--white);cursor:pointer;color:var(--text-mid);font-family:'DM Sans',sans-serif;flex-shrink:0;margin-left:8px}
+.copy-btn.copied{background:var(--green-light);color:var(--green);border-color:var(--green)}
+
+/* TAG */
+.tag{display:inline-block;font-size:11px;color:var(--text-mid);background:#F0EBE5;border-radius:99px;padding:2px 8px;margin:2px}
+
+/* AVATAR */
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;flex-shrink:0;font-family:'DM Mono',monospace}
+.avatar-mp{background:#D4EBD0;color:var(--green)}
+.avatar-pkg{background:#E8E3F5;color:#4A3D8A}
+
+/* SHEET */
+.sheet-overlay{position:fixed;inset:0;background:rgba(44,24,16,.5);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.sheet-overlay.open{display:flex}
+.sheet{background:var(--cream);border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:93dvh;overflow-y:auto;padding:18px 20px 40px}
+.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 18px}
+.sheet-title{font-family:'DM Serif Display',serif;font-size:21px;color:var(--brown);margin-bottom:3px}
+.sheet-sub{font-size:13px;color:var(--text-mid);margin-bottom:18px}
+
+/* STEP NAV */
+.step-nav{display:flex;align-items:center;margin-bottom:22px}
+.step{display:flex;flex-direction:column;align-items:center;gap:3px}
+.step-circle{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text-light);background:var(--white);transition:all .2s}
+.step.active .step-circle{border-color:var(--brown);background:var(--brown);color:var(--cream)}
+.step.done .step-circle{border-color:var(--green);background:var(--green);color:#fff}
+.step-label{font-size:9px;color:var(--text-light);font-weight:500;letter-spacing:.04em;text-align:center}
+.step.active .step-label,.step.done .step-label{color:var(--brown)}
+.step-line{flex:1;height:2px;background:var(--border);margin-bottom:14px}
+.step-line.done{background:var(--green)}
+
+/* SUCCESS */
+.success-screen{text-align:center;padding:28px 16px}
+.success-icon{font-size:52px;margin-bottom:14px}
+.success-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--brown);margin-bottom:7px}
+.success-sub{font-size:14px;color:var(--text-mid);margin-bottom:26px;line-height:1.5}
+
+/* COMPARADOR */
+.comp-table{width:100%;border-collapse:collapse;font-size:13px}
+.comp-table th{text-align:left;font-size:10px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.05em;padding:7px 8px;border-bottom:1px solid var(--border)}
+.comp-table td{padding:10px 8px;border-bottom:1px solid #F5F0EA;vertical-align:middle}
+.comp-table tr:last-child td{border-bottom:none}
+.price-best{color:var(--green);font-weight:600;font-family:'DM Mono',monospace}
+.price-mid{color:var(--orange);font-family:'DM Mono',monospace}
+.price-high{color:var(--red);font-family:'DM Mono',monospace}
+.ahorro-box{background:var(--green-light);border-radius:var(--radius-sm);padding:11px 13px;margin-top:11px;font-size:13px;color:var(--green)}
+
+/* EMPTY */
+.empty{text-align:center;padding:40px 20px;color:var(--text-light)}
+.empty p{font-size:14px;margin-top:10px}
+
+/* CAT DIV */
+.cat-div{font-size:10px;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.07em;margin:18px 0 9px;display:flex;align-items:center;gap:8px}
+.cat-div::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:var(--cream);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:12px}
+.loading-logo{font-family:'DM Serif Display',serif;font-size:36px;color:var(--brown)}
+.loading-logo span{color:var(--gold);font-style:italic}
+.loading-dot{width:6px;height:6px;border-radius:50%;background:var(--brown-light);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+.section-h{font-family:'DM Serif Display',serif;font-size:17px;color:var(--brown);margin:18px 0 10px}
+.receps-list{margin-top:8px}
+.recep-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.recep-item:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="loading-logo">Del'<span>art</span></div>
+  <div class="loading-dot"></div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none">
+  <div class="login-logo">Del'<span>art</span></div>
+  <div class="login-sub">Gestión de Compras</div>
+  <div class="login-card">
+    <p class="login-title">Ingresar</p>
+    <div class="login-err" id="login-err">Usuario o contraseña incorrectos</div>
+    <div class="form-field">
+      <label class="form-label">Usuario</label>
+      <input class="form-input" type="text" id="login-user" placeholder="maria" autocomplete="username" />
+    </div>
+    <div class="form-field">
+      <label class="form-label">Contraseña</label>
+      <input class="form-input" type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()" style="margin-top:6px">Entrar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;flex-direction:column;height:100dvh">
+
+  <header class="app-header">
+    <div>
+      <div class="app-logo">Del'<span>art</span></div>
+      <div class="header-sub">Gestión de Compras</div>
+    </div>
+    <div class="header-user" onclick="doLogout()">
+      <span id="header-username"></span>
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+    </div>
+  </header>
+
+  <!-- SCREENS -->
+  <div id="screen-resumen" class="screen active">
+    <h1 class="screen-title">Resumen</h1>
+    <p class="screen-sub" id="resumen-mes"></p>
+    <div class="metrics" id="resumen-metrics"></div>
+    <div class="section-h">Novedades recientes</div>
+    <div id="resumen-list"></div>
+  </div>
+
+  <div id="screen-pedidos" class="screen">
+    <h1 class="screen-title">Pedidos</h1>
+    <p class="screen-sub">Registro y seguimiento</p>
+    <div class="pills" id="pills-pedidos">
+      <button class="pill active" onclick="filterPedidos('todos',this)">Todos</button>
+      <button class="pill" onclick="filterPedidos('mp',this)">Mat. primas</button>
+      <button class="pill" onclick="filterPedidos('pkg',this)">Packaging</button>
+      <button class="pill" onclick="filterPedidos('completo',this)">Sin pagar</button>
+      <button class="pill" onclick="filterPedidos('parcial',this)">Parciales</button>
+    </div>
+    <div id="pedidos-list"></div>
+    <button class="btn-fab" onclick="openNuevoPedido()">+</button>
+  </div>
+
+  <div id="screen-proveedores" class="screen">
+    <h1 class="screen-title">Proveedores</h1>
+    <p class="screen-sub">Lista maestra</p>
+    <div class="search-bar">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" placeholder="Buscar proveedor..." oninput="searchProveedores(this.value)" />
+    </div>
+    <div class="pills" id="pills-prov">
+      <button class="pill active" onclick="filterProveedores('todos',this)">Todos</button>
+      <button class="pill" onclick="filterProveedores('mp',this)">Mat. primas</button>
+      <button class="pill" onclick="filterProveedores('pkg',this)">Packaging</button>
+    </div>
+    <div id="proveedores-list"></div>
+    <button class="btn-fab" onclick="openNuevoProveedor(null)">+</button>
+  </div>
+
+  <div id="screen-config" class="screen">
+    <h1 class="screen-title">Configuración</h1>
+    <p class="screen-sub">Insumos y ajustes</p>
+
+    <div class="section-h">Insumos</div>
+    <div class="pills" id="pills-ins">
+      <button class="pill active" onclick="filterInsumos('todos',this)">Todos</button>
+      <button class="pill" onclick="filterInsumos('mp',this)">Mat. primas</button>
+      <button class="pill" onclick="filterInsumos('pkg',this)">Packaging</button>
+    </div>
+    <div id="insumos-list"></div>
+    <button class="btn btn-primary" style="margin-top:4px" onclick="openNuevoInsumo(null)">+ Agregar insumo</button>
+  </div>
+
+  <div id="screen-comparador" class="screen">
+    <h1 class="screen-title">Comparador</h1>
+    <p class="screen-sub">Precios por proveedor</p>
+    <div class="form-field">
+      <label class="form-label">Selecciona insumo</label>
+      <select class="form-input" id="comp-select" onchange="loadComparador(this.value)">
+        <option value="">— Selecciona —</option>
+      </select>
+    </div>
+    <div id="comp-result"></div>
+    <p style="font-size:12px;color:var(--text-light);margin-top:12px">Los precios se actualizan automáticamente con cada pedido ingresado.</p>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="showScreen('resumen',this)">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Resumen<div class="nav-dot"></div>
+    </button>
+    <button class="nav-item" onclick="showScreen('pedidos',this)">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Pedidos<div class="nav-dot"></div>
+    </button>
+    <button class="nav-item" onclick="showScreen('proveedores',this)">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      Proveedores<div class="nav-dot"></div>
+    </button>
+    <button class="nav-item" onclick="showScreen('comparador',this)">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Comparar<div class="nav-dot"></div>
+    </button>
+    <button class="nav-item" onclick="showScreen('config',this)">
+      <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Config<div class="nav-dot"></div>
+    </button>
+  </nav>
+</div>
+
+<!-- SHEETS -->
+
+<!-- NUEVO PEDIDO -->
+<div class="sheet-overlay" id="sheet-pedido">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div id="ps1">
+      <p class="sheet-title">Nuevo pedido</p>
+      <p class="sheet-sub">Paso 1 de 4 — Detalle</p>
+      <div class="step-nav">
+        <div class="step active"><div class="step-circle">1</div><div class="step-label">Pedido</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-circle">2</div><div class="step-label">Factura</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-circle">3</div><div class="step-label">Recepción</div></div>
+        <div class="step-line"></div>
+        <div class="step"><div class="step-circle">4</div><div class="step-label">Pago</div></div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Insumo</label>
+        <select class="form-input" id="p-insumo" onchange="onInsumoChange()">
+          <option value="">— Selecciona insumo —</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Proveedor</label>
+        <select class="form-input" id="p-proveedor">
+          <option value="">— Selecciona proveedor —</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="form-label">Cantidad</label>
+          <input class="form-input" type="number" id="p-cantidad" placeholder="50" />
+        </div>
+        <div class="form-field">
+          <label class="form-label">Unidad</label>
+          <input class="form-input" type="text" id="p-unidad" placeholder="kg" readonly style="background:#f5f0ea" />
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="form-label">Fecha pedido</label>
+          <input class="form-input" type="date" id="p-fecha" />
+        </div>
+        <div class="form-field">
+          <label class="form-label">Entrega estimada</label>
+          <input class="form-input" type="date" id="p-entrega" />
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Notas (opcional)</label>
+        <textarea class="form-input" id="p-notas" placeholder="Ej: Sacos de 25 kg..."></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="closeSheet('sheet-pedido')">Cancelar</button>
+        <button class="btn btn-primary" onclick="pedidoStep(2)">Siguiente →</button>
+      </div>
+    </div>
+
+    <div id="ps2" style="display:none">
+      <p class="sheet-title">Factura</p>
+      <p class="sheet-sub">Paso 2 de 4</p>
+      <div class="form-field">
+        <label class="form-label">¿Tienes la factura ahora?</label>
+        <select class="form-input" onchange="toggleFactura(this.value)">
+          <option value="si">Sí, la tengo</option>
+          <option value="no">No todavía</option>
+        </select>
+      </div>
+      <div id="campos-factura">
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label">Nro. factura</label>
+            <input class="form-input" type="text" id="p-nro-fact" placeholder="F-2026-XXXX" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Fecha factura</label>
+            <input class="form-input" type="date" id="p-fecha-fact" />
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Fecha vencimiento pago</label>
+          <input class="form-input" type="date" id="p-vence" />
+        </div>
+        <div style="background:#FDF9F4;border:1px solid #E8D8C8;border-radius:var(--radius);padding:13px;margin-bottom:13px">
+          <p style="font-size:11px;font-weight:600;color:var(--text-mid);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Desglose de precio</p>
+          <div class="form-grid">
+            <div class="form-field" style="margin-bottom:0">
+              <label class="form-label">Precio por <span id="p-unidad-label">unidad</span></label>
+              <input class="form-input" type="number" id="p-precio-unit" placeholder="6000" oninput="calcTotal()" />
+            </div>
+            <div class="form-field" style="margin-bottom:0">
+              <label class="form-label">Total factura (CLP)</label>
+              <input class="form-input" type="number" id="p-precio-total" placeholder="300000" oninput="calcUnit()" />
+            </div>
+          </div>
+          <p class="form-hint" style="margin-top:6px">Puedes ingresar uno solo — el otro se calcula automático.</p>
+        </div>
+      </div>
+      <div id="sin-factura-msg" style="display:none;background:#EFF8FF;border-radius:var(--radius-sm);padding:11px 13px;font-size:13px;color:#1A5FB4;margin-bottom:13px">
+        💡 Quedará como "Sin factura". Puedes agregarla después desde el pedido.
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="pedidoStep(1)">← Atrás</button>
+        <button class="btn btn-primary" onclick="pedidoStep(3)">Siguiente →</button>
+      </div>
+    </div>
+
+    <div id="ps3" style="display:none">
+      <p class="sheet-title">Recepción</p>
+      <p class="sheet-sub">Paso 3 de 4 — ¿Ya llegó algo?</p>
+      <div class="form-field">
+        <label class="form-label">Estado de entrega</label>
+        <select class="form-input" id="p-estado-recep" onchange="toggleRecepFields(this.value)">
+          <option value="nada">Aún no llega nada</option>
+          <option value="parcial">Llegó parcial</option>
+          <option value="completo">Llegó completo</option>
+        </select>
+      </div>
+      <div id="recep-fields" style="display:none">
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label">Cantidad recibida</label>
+            <input class="form-input" type="number" id="p-cant-recep" placeholder="35" oninput="updateRecepProg()" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Fecha recepción</label>
+            <input class="form-input" type="date" id="p-fecha-recep" />
+          </div>
+        </div>
+        <div style="margin-bottom:13px">
+          <div class="prog-label"><span>Recibido</span><span id="recep-prog-label">0</span></div>
+          <div class="prog-wrap"><div class="prog-bar" id="recep-prog-bar" style="width:0%"></div></div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Observaciones</label>
+          <input class="form-input" type="text" id="p-obs-recep" placeholder="Ej: Faltaron 15 kg..." />
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="pedidoStep(2)">← Atrás</button>
+        <button class="btn btn-primary" onclick="pedidoStep(4)">Siguiente →</button>
+      </div>
+    </div>
+
+    <div id="ps4" style="display:none">
+      <p class="sheet-title">Pago</p>
+      <p class="sheet-sub">Paso 4 de 4</p>
+      <div class="form-field">
+        <label class="form-label">Estado del pago</label>
+        <select class="form-input" onchange="togglePagoFields(this.value)">
+          <option value="pendiente">Pendiente — aún no se paga</option>
+          <option value="pagado">Pagado ahora</option>
+        </select>
+      </div>
+      <div id="pago-fields" style="display:none">
+        <div class="form-grid">
+          <div class="form-field">
+            <label class="form-label">Fecha de pago</label>
+            <input class="form-input" type="date" id="p-fecha-pago" />
+          </div>
+          <div class="form-field">
+            <label class="form-label">Monto pagado (CLP)</label>
+            <input class="form-input" type="number" id="p-monto-pago" />
+          </div>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Nro. transferencia (opcional)</label>
+          <input class="form-input" type="text" id="p-nro-transfer" placeholder="202605XXXXXX" />
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="pedidoStep(3)">← Atrás</button>
+        <button class="btn btn-primary" onclick="guardarPedido()">✓ Guardar pedido</button>
+      </div>
+    </div>
+
+    <div id="ps-ok" style="display:none">
+      <div class="success-screen">
+        <div class="success-icon">🍫</div>
+        <p class="success-title">¡Pedido registrado!</p>
+        <p class="success-sub">Quedó guardado. Puedes seguirlo desde Pedidos.</p>
+        <button class="btn btn-primary" onclick="closeSheet('sheet-pedido');loadPedidos()">Ver pedidos</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVO PROVEEDOR -->
+<div class="sheet-overlay" id="sheet-proveedor">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title" id="prov-sheet-title">Agregar proveedor</p>
+    <p class="sheet-sub">Los datos quedan disponibles en todos los pedidos</p>
+    <input type="hidden" id="prov-edit-id" value="" />
+
+    <div class="form-section">
+      <div class="form-section-title">🏪 Datos generales</div>
+      <div class="form-field">
+        <label class="form-label">Tipo</label>
+        <select class="form-input" id="prov-tipo">
+          <option value="">— Selecciona —</option>
+          <option value="mp">Materia prima</option>
+          <option value="pkg">Packaging</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Nombre del proveedor</label>
+        <input class="form-input" type="text" id="prov-nombre" placeholder="Ej: CacaoChile" />
+        <p class="form-hint">Escríbelo exactamente como quieres que aparezca en los pedidos.</p>
+      </div>
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Nombre contacto</label><input class="form-input" type="text" id="prov-contacto" placeholder="Ej: Jorge Pérez" /></div>
+        <div class="form-field"><label class="form-label">Teléfono / WhatsApp</label><input class="form-input" type="tel" id="prov-tel" placeholder="+56 9 XXXX XXXX" /></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Email contacto</label><input class="form-input" type="email" id="prov-email" placeholder="contacto@..." /></div>
+        <div class="form-field"><label class="form-label">RUT empresa</label><input class="form-input" type="text" id="prov-rut" placeholder="76.123.456-7" /></div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Condición de pago habitual</label>
+        <select class="form-input" id="prov-pago">
+          <option value="">— Sin especificar —</option>
+          <option>Pago inmediato</option><option>30 días</option><option>60 días</option><option>Contra entrega</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">🏦 Datos para transferencia</div>
+      <div class="form-grid">
+        <div class="form-field">
+          <label class="form-label">Banco</label>
+          <select class="form-input" id="prov-banco">
+            <option value="">— Selecciona —</option>
+            <option>Banco de Chile</option><option>BancoEstado</option><option>Santander</option>
+            <option>BCI</option><option>Scotiabank</option><option>Itaú</option>
+            <option>BICE</option><option>Security</option><option>Falabella</option><option>Otro</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">Tipo de cuenta</label>
+          <select class="form-input" id="prov-tipo-cuenta">
+            <option value="">— Selecciona —</option>
+            <option>Cuenta corriente</option><option>Cuenta vista</option><option>Cuenta de ahorro</option><option>Cuenta RUT</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Número de cuenta</label><input class="form-input" type="text" id="prov-nro-cuenta" placeholder="00-123-45678-09" /></div>
+        <div class="form-field"><label class="form-label">RUT titular cuenta</label><input class="form-input" type="text" id="prov-rut-cuenta" placeholder="76.123.456-7" /></div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Email para comprobante</label>
+        <input class="form-input" type="email" id="prov-email-comp" placeholder="pagos@proveedor.cl" />
+        <p class="form-hint">A este email va el comprobante después de pagar.</p>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">📝 Notas</div>
+      <textarea class="form-input" id="prov-notas" placeholder="Ej: Despacha los martes, pedido mínimo 20 kg..."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeSheet('sheet-proveedor')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarProveedor()">Guardar proveedor</button>
+    </div>
+  </div>
+</div>
+
+<!-- FICHA PROVEEDOR -->
+<div class="sheet-overlay" id="sheet-ficha">
+  <div class="sheet" id="ficha-content"></div>
+</div>
+
+<!-- FICHA PEDIDO (recepcion + pago) -->
+<div class="sheet-overlay" id="sheet-pedido-detalle">
+  <div class="sheet" id="pedido-detalle-content"></div>
+</div>
+
+<!-- NUEVO INSUMO -->
+<div class="sheet-overlay" id="sheet-insumo">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title" id="ins-sheet-title">Agregar insumo</p>
+    <p class="sheet-sub">Aparecerá en la lista al crear pedidos</p>
+    <input type="hidden" id="ins-edit-id" value="" />
+    <div class="form-field">
+      <label class="form-label">Tipo</label>
+      <select class="form-input" id="ins-tipo">
+        <option value="">— Selecciona —</option>
+        <option value="mp">Materia prima</option>
+        <option value="pkg">Packaging</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Nombre del insumo</label>
+      <input class="form-input" type="text" id="ins-nombre" placeholder="Ej: Cacao en polvo" />
+    </div>
+    <div class="form-field">
+      <label class="form-label">Unidad de medida</label>
+      <select class="form-input" id="ins-unidad">
+        <option value="kg">kg</option>
+        <option value="unidades">unidades</option>
+        <option value="litros">litros</option>
+        <option value="rollos">rollos</option>
+        <option value="cajas">cajas</option>
+        <option value="gramos">gramos</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeSheet('sheet-insumo')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarInsumo()">Guardar insumo</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
