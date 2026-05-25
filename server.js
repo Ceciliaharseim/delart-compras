@@ -33,8 +33,8 @@ function writeDB(data) {
 function getDefaultDB() {
   return {
     users: [
-      { id: 1, username: 'maria', password: 'delart2026', nombre: 'María', role: 'jefa' },
-      { id: 2, username: 'compras', password: 'compras2026', nombre: 'Compras', role: 'compras' }
+      { id: 1, username: 'Cecilia', password: 'compras2026', nombre: 'María', role: 'jefa' },
+      { id: 2, username: 'Josefina', password: 'compras2026', nombre: 'Compras', role: 'compras' }
     ],
     proveedores: [
       { id: 1, nombre: 'CacaoChile', tipo: 'mp', contacto: 'Jorge Pérez', telefono: '+56 9 8812 3456', email: 'contacto@cacaochile.cl', rut: '76.543.210-8', productos: 'Cacao en polvo, Manteca de cacao, Licor de cacao', pago: '30 días', banco: 'Banco de Chile', tipoCuenta: 'Cuenta corriente', numeroCuenta: '00-123-45678-09', rutCuenta: '76.543.210-8', emailTransferencia: 'pagos@cacaochile.cl', notas: 'Despacha martes y jueves. Pedido mínimo 20 kg.', activo: true },
